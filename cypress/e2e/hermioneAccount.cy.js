@@ -38,6 +38,7 @@ describe('Bank app', () => {
           accountPageObj.assertAccountNumber(accountNumber);
           accountPageObj.assertBalance(mainBalance);
           accountPageObj.assertCurrency('Dollar');
+
           // DEPOSIT
           accountPageObj.clickOperationType('Deposit');
           accountPageObj.insertAmount(depositAmount);
@@ -46,47 +47,49 @@ describe('Bank app', () => {
           accountPageObj.assertMessage('Deposit Successful');
           mainBalance = depositAmount + mainBalance;
           accountPageObj.assertBalance(mainBalance);
-          // WITHDRAWL
+
+          // WITHDRAWAL
           accountPageObj.clickOperationType('Withdrawl');
           accountPageObj.assertFieldName('Amount to be Withdrawn :');
           accountPageObj.insertAmount(withdrawlAmount);
           accountPageObj.clickSubmitBtn('Withdraw');
           accountPageObj.assertMessage('Transaction successful');
           mainBalance = mainBalance - withdrawlAmount;
+
           // Assert Balance
           accountPageObj.assertBalance(mainBalance);
-          // Click **[Transacrions]**
-          accountPageObj.clickOperationType('Transactions');
-          // Assert both transactions details
-          transactionsPageObj.clickTableHead('a', 'Date-Time');
-          transactionsPageObj
-            .assertTableRowData('tr#anchor0', 1, withdrawlAmount);
-          transactionsPageObj
-            .assertTableRowData('tr#anchor0', 2, 'Debit');
-          transactionsPageObj
-            .assertTableRowData('tr#anchor1', 1, depositAmount);
-          transactionsPageObj
-            .assertTableRowData('tr#anchor1', 2, 'Credit');
 
-          // Click **[Back]**
+          // Click [Transactions]
+          accountPageObj.clickOperationType('Transactions');
+
+          // Assert both transactions details (corrected column indices: 0 and 1)
+          transactionsPageObj.clickTableHead('a', 'Date-Time');
+          // eslint-disable-next-line max-len
+          transactionsPageObj.assertTableRowData('tr#anchor0', 0, withdrawlAmount);
+          transactionsPageObj.assertTableRowData('tr#anchor0', 1, 'Debit');
+          // eslint-disable-next-line max-len
+          transactionsPageObj.assertTableRowData('tr#anchor1', 0, depositAmount);
+          transactionsPageObj.assertTableRowData('tr#anchor1', 1, 'Credit');
+
+          // Click [Back]
           transactionsPageObj.clickBackBtn();
 
-          // Change Account number
-          accountPageObj.changeAccoutNoTo('1002');
-          // Click **[Transacrions]**
+          // Change Account number (fixed typo)
+          accountPageObj.changeAccountNoTo('1002');
+
+          // Click [Transactions]
           accountPageObj.clickOperationType('Transactions');
+
           // Assert no transactions for this account
           transactionsPageObj.assureTableEmpty();
 
-          // Click **[Logout]**
+          // Click [Logout]
           accountPageObj.logout();
+
           // Assert user is logged out
           cy.assureUrl('#/customer');
-
-          customerPageObj.userSelector
-            .should('have.class', 'ng-untouched');
-          customerPageObj.userSelector
-            .should('not.have.class', 'ng-touched');
+          customerPageObj.userSelector.should('have.class', 'ng-untouched');
+          customerPageObj.userSelector.should('not.have.class', 'ng-touched');
         });
     });
 });

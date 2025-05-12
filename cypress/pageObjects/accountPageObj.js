@@ -47,7 +47,7 @@ export default class AccountPageObj {
       .should('be.visible');
   }
 
-  changeAccoutNoTo(number) {
+  changeAccountNoTo(number) {
     return cy.get('#accountSelect').select(number);
   }
 
